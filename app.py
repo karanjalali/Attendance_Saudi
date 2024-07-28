@@ -1,13 +1,19 @@
 from flask import Flask, request, jsonify, render_template
 import gspread
+import os
+import json
+import base64
 from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
 
 app = Flask(__name__)
 
-# Configure Google Sheets API credentials
-scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name("/Users/karanjalali/Desktop/Visual_Code_Attendance/groomville-d7053-a34cbef576f9.json", scope)
+# Decode the base64 string back to JSON
+credentials_json = base64.b64decode(os.environ.get('GOOGLE_APPLICATION_CREDENTIALS_BASE64')).decode('utf-8')
+creds_dict = json.loads(credentials_json)
+creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"])
+
+# Authorize the client with the credentials
 client = gspread.authorize(creds)
 
 # Open the spreadsheet by URL
