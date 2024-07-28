@@ -229,7 +229,7 @@
             });
         }
 
-        function populateStudentTable(students, batchName) {
+                function populateStudentTable(students, batchName) {
             const tableBody = document.querySelector('#studentTable tbody');
             tableBody.innerHTML = '';
             students.filter(student => student.batchName === batchName).forEach(student => {
