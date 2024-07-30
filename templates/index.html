@@ -2,14 +2,15 @@
 <html>
 <head>
     <title>Student Form</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         body {
-            background-color: #1a1a1a;
-            color: #fff;
+            background-color: #ffffff;
+            color: #000;
             font-family: Arial, sans-serif;
             padding: 20px;
             text-align: center;
-        }
+}
         form {
             display: inline-block;
             width: 100%;
@@ -20,6 +21,7 @@
             margin: 10px auto;
             width: 100%;
             max-width: 400px;
+            box-sizing: border-box; /* Ensures padding and border are included in the width and height */
         }
         table {
             width: 100%;
@@ -92,34 +94,34 @@
     <h1>Student Form</h1>
     <form id="studentForm">
         <label for="branch">Branch:</label>
-        <select id="branch" name="branch">
+        <select id="branch" name="branch" required>
             <option value="">Select Branch</option>
         </select>
         <label for="batch">Batch:</label>
-        <select id="batch" name="batch">
+        <select id="batch" name="batch" required>
             <option value="">Select Batch</option>
         </select>
         <label for="grade">Grade:</label>
-        <select id="grade" name="grade">
+        <select id="grade" name="grade" required>
             <option value="">Select Grade</option>
         </select>
         <label for="teacher">Teacher:</label>
-        <select id="teacher" name="teacher">
+        <select id="teacher" name="teacher" required>
             <option value="">Select Teacher</option>
         </select>
         <label for="subject">Subject:</label>
-        <select id="subject" name="subject">
+        <select id="subject" name="subject" required>
             <option value="">Select Subject</option>
         </select>
         <label for="chapter">Chapter:</label>
-        <select id="chapter" name="chapter">
+        <select id="chapter" name="chapter" required>
             <option value="">Select Chapter</option>
         </select>
         <label for="subtopic">Subtopic:</label>
-        <input type="text" id="subtopic" name="subtopic">
+        <input type="text" id="subtopic" name="subtopic" required>
         <label for="classType">Class Type:</label>
-        <select id="classType" name="classType">
-            <option value="">Select Class Type</option>
+        <select id="classType" name="classType" required>
+            <option value="">Select ClassType</option>
         </select>
         <table id="studentTable">
             <thead>
@@ -141,118 +143,140 @@
     <div id="errorMessage" class="error-message hidden">There was an error submitting the form. Please try again.</div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            fetch('/get_data')
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Data fetched from server:', data); // Debugging line
-                    populateDropdown('branch', data.branches);
-                    populateDropdown('teacher', data.teachers);
-                    populateDropdown('subject', data.subjects);
-                    populateDropdown('grade', data.grades);
-                    populateDropdown('classType', data.classTypes);
-                    populateDropdown('batch', data.batches);
+    fetch('/get_data')
+        .then(response => response.json())
+        .then(data => {
+            console.log('Data fetched from server:', data); // Debugging line
+            populateDropdown('branch', data.branches);
+            populateDropdown('teacher', data.teachers);
+            populateDropdown('subject', data.subjects);
+            populateDropdown('grade', data.grades);
+            populateDropdown('classType', data.classTypes);
+            populateDropdown('batch', data.batches);
 
-                    const batchSelect = document.getElementById('batch');
-                    batchSelect.addEventListener('change', function() {
-                        populateStudentTable(data.students, batchSelect.value);
-                    });
+            const gradeSelect = document.getElementById('grade');
+            const subjectSelect = document.getElementById('subject');
+            gradeSelect.addEventListener('change', loadChapters);
+            subjectSelect.addEventListener('change', loadChapters);
 
-                    const subjectSelect = document.getElementById('subject');
-                    subjectSelect.addEventListener('change', function() {
-                        populateDropdown('chapter', data.chapterNames.filter(c => c.subjectName === subjectSelect.value).map(c => c.chapterName));
-                    });
-                })
-                .catch(error => {
-                    console.error('Error fetching data:', error); // Debugging line
-                    document.getElementById('errorMessage').classList.remove('hidden');
-                });
-
-            document.getElementById('submitBtn').addEventListener('click', function() {
-                const studentData = Array.from(document.querySelectorAll('#studentTable tbody tr')).map(row => {
-                    const cells = row.querySelectorAll('td');
-                    return {
-                        studentName: cells[0].innerText,
-                        assignmentGrade: cells[1].querySelector('select').value,
-                        present: cells[2].querySelector('input').checked ? 'Present' : 'Absent',
-                        quizScore: cells[3].querySelector('input').value
-                    };
-                });
-
-                const data = {
-                    branchName: document.getElementById('branch').value,
-                    batchName: document.getElementById('batch').value,
-                    grade: document.getElementById('grade').value,
-                    teacherName: document.getElementById('teacher').value,
-                    subjectName: document.getElementById('subject').value,
-                    chapterName: document.getElementById('chapter').value,
-                    subtopicName: document.getElementById('subtopic').value,
-                    classType: document.getElementById('classType').value,
-                    studentData: studentData
-                };
-
-                document.getElementById('loader').classList.remove('hidden');
-                document.getElementById('successMessage').classList.add('hidden');
-                document.getElementById('errorMessage').classList.add('hidden');
-
-                fetch('/submit', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                })
-                .then(response => response.json())
-                .then(result => {
-                    document.getElementById('loader').classList.add('hidden');
-                    document.getElementById('successMessage').classList.remove('hidden');
-                    setTimeout(() => {
-                        document.getElementById('successMessage').classList.add('hidden');
-                        resetForm();
-                    }, 2000);
-                })
-                .catch(error => {
-                    console.error('Error submitting form:', error); // Debugging line
-                    document.getElementById('loader').classList.add('hidden');
-                    document.getElementById('errorMessage').classList.remove('hidden');
-                    setTimeout(() => {
-                        document.getElementById('errorMessage').classList.add('hidden');
-                    }, 5000);
-                });
+            const batchSelect = document.getElementById('batch');
+            batchSelect.addEventListener('change', function() {
+                populateStudentTable(data.students, batchSelect.value);
             });
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error); // Debugging line
+            document.getElementById('errorMessage').classList.remove('hidden');
         });
 
-        function populateDropdown(id, options) {
-            const select = document.getElementById(id);
-            select.innerHTML = `<option value="">Select ${id.charAt(0).toUpperCase() + id.slice(1)}</option>`;
-            options.forEach(option => {
-                select.innerHTML += `<option value="${option}">${option}</option>`;
-            });
-        }
+    document.getElementById('submitBtn').addEventListener('click', function() {
+        const studentData = Array.from(document.querySelectorAll('#studentTable tbody tr')).map(row => {
+            const cells = row.querySelectorAll('td');
+            return {
+                studentName: cells[0].innerText,
+                assignmentGrade: cells[1].querySelector('select').value,
+                present: cells[2].querySelector('input').checked ? 'Present' : 'Absent',
+                quizScore: cells[3].querySelector('input').value
+            };
+        });
 
-                function populateStudentTable(students, batchName) {
-            const tableBody = document.querySelector('#studentTable tbody');
-            tableBody.innerHTML = '';
-            students.filter(student => student.batchName === batchName).forEach(student => {
-                tableBody.innerHTML += `
-                    <tr>
-                        <td>${student.studentName}</td>
-                        <td>
-                            <select>
-                                ${['AA', 'AB', 'AC', 'BA', 'BB', 'BC', 'CA', 'CB', 'CC', 'DD'].map(grade => `<option value="${grade}">${grade}</option>`).join('')}
-                            </select>
-                        </td>
-                        <td><input type="checkbox"></td>
-                        <td><input type="number" min="1" max="10"></td>
-                    </tr>
-                `;
-            });
-        }
+        const data = {
+            branchName: document.getElementById('branch').value,
+            batchName: document.getElementById('batch').value,
+            grade: document.getElementById('grade').value,
+            teacherName: document.getElementById('teacher').value,
+            subjectName: document.getElementById('subject').value,
+            chapterName: document.getElementById('chapter').value,
+            subtopicName: document.getElementById('subtopic').value,
+            classType: document.getElementById('classType').value,
+            studentData: studentData
+        };
 
-        function resetForm() {
-            document.getElementById('studentForm').reset();
-            const tableBody = document.querySelector('#studentTable tbody');
-            tableBody.innerHTML = '';
+        document.getElementById('loader').classList.remove('hidden');
+        document.getElementById('successMessage').classList.add('hidden');
+        document.getElementById('errorMessage').classList.add('hidden');
+
+        fetch('/submit', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(result => {
+            document.getElementById('loader').classList.add('hidden');
+            document.getElementById('successMessage').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('successMessage').classList.add('hidden');
+                resetForm();
+            }, 2000);
+        })
+        .catch(error => {
+            console.error('Error submitting form:', error); // Debugging line
+            document.getElementById('loader').classList.add('hidden');
+            document.getElementById('errorMessage').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('errorMessage').classList.add('hidden');
+            }, 5000);
+        });
+    });
+
+    function populateDropdown(id, options) {
+        const select = document.getElementById(id);
+        select.innerHTML = `<option value="">Select ${id.charAt(0).toUpperCase() + id.slice(1)}</option>`;
+        options.forEach(option => {
+            select.innerHTML += `<option value="${option}">${option}</option>`;
+        });
+    }
+
+    function populateStudentTable(students, batchName) {
+        const tableBody = document.querySelector('#studentTable tbody');
+        tableBody.innerHTML = '';
+        students.filter(student => student.batchName === batchName).forEach(student => {
+            tableBody.innerHTML += `
+                <tr>
+                    <td>${student.studentName}</td>
+                    <td>
+                        <select required>
+                        ${['Null', 'AA', 'AB', 'AC', 'BA', 'BB', 'BC', 'CA', 'CB', 'CC', 'DD'].map(grade => `<option value="${grade}">${grade}</option>`).join('')}
+                    </select>
+                    </td>
+                    <td><input type="checkbox" checked></td>
+                    <td><input type="number" min="0" max="10" value="0" required></td>
+                </tr>
+            `;
+        });
+    }
+
+    function loadChapters() {
+        const grade = document.getElementById('grade').value;
+        const subject = document.getElementById('subject').value;
+        if (grade && subject) {
+            console.log(`Fetching chapters for Grade: ${grade}, Subject: ${subject}`); // Debugging line
+            fetch(`/get_chapters?grade=${grade}&subject=${subject}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Chapters fetched from server:', data); // Debugging line
+                    if (data && data.chapters && data.chapters.length > 0) {
+                        populateDropdown('chapter', data.chapters);
+                    } else {
+                        console.log('No chapters found for the selected grade and subject.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching chapters:', error); // Debugging line
+                    document.getElementById('errorMessage').classList.remove('hidden');
+                });
         }
+    }
+
+    function resetForm() {
+        document.getElementById('studentForm').reset();
+        const tableBody = document.querySelector('#studentTable tbody');
+        tableBody.innerHTML = '';
+    }
+});
     </script>
 </body>
 </html>
