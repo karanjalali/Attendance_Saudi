@@ -11,7 +11,15 @@
             padding: 20px;
             text-align: center;
             font-size: 20px;
-}
+        }
+        .logo {
+            background-image: url('images/logo.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            height: 150px;
+            margin-bottom: 20px;
+        }
         form {
             display: inline-block;
             width: 100%;
@@ -25,10 +33,10 @@
             box-sizing: border-box; /* Ensures padding and border are included in the width and height */
             font-size: 20px;
         }
-        table {
+        .table-container {
             width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
+            overflow-x: auto;
+            margin-top: 30px;
         }
         th, td {
             padding: 10px;
@@ -46,7 +54,7 @@
             cursor: pointer;
             font-family: Consolas, Courier New, monospace;
             border: solid #404c5d 1px;
-            font-size: 16px;
+            font-size: 22px;
             color: rgb(161, 161, 161);
             transition: 500ms;
             border-radius: 5px;
@@ -93,7 +101,7 @@
     </style>
 </head>
 <body>
-    <h1>Student Form</h1>
+    <h1>Attendance Form</h1>
     <form id="studentForm">
         <label for="branch">Branch:</label>
         <select id="branch" name="branch" required>
