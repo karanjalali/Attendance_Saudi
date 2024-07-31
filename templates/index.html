@@ -185,6 +185,10 @@
         });
 
     document.getElementById('submitBtn').addEventListener('click', function() {
+        if (!validateForm()) {
+            alert('Please fill all the required fields.');
+            return;
+        }
         const studentData = Array.from(document.querySelectorAll('#studentTable tbody tr')).map(row => {
             const cells = row.querySelectorAll('td');
             return {
@@ -237,6 +241,15 @@
         });
     });
 
+    function validateForm() {
+    const requiredFields = ['branch', 'batch', 'grade', 'teacher', 'subject', 'chapter', 'subtopic', 'classType'];
+    for (const field of requiredFields) {
+        if (document.getElementById(field).value === '') {
+            return false;
+        }
+    }
+    return true;
+}
     function populateDropdown(id, options) {
         const select = document.getElementById(id);
         select.innerHTML = `<option value="">Select ${id.charAt(0).toUpperCase() + id.slice(1)}</option>`;
