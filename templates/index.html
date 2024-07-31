@@ -129,6 +129,10 @@
             100% { transform: rotate(360deg); }
         }
 
+        .hidden {
+            display: none;
+        }
+
         .success-message {
             color: #28a745;
             font-size: 18px;
@@ -200,6 +204,10 @@
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Hide the messages when the page loads
+            document.getElementById('successMessage').classList.add('hidden');
+            document.getElementById('errorMessage').classList.add('hidden');
+
             fetch('/get_data')
                 .then(response => response.json())
                 .then(data => {
@@ -267,9 +275,14 @@
                 .then(response => response.json())
                 .then(result => {
                     document.getElementById('loader').classList.add('hidden');
-                    document.getElementById('successMessage').classList.remove('hidden');
+                    if (result && result.topperName) {
+                        document.getElementById('successMessage').classList.remove('hidden');
+                    } else {
+                        document.getElementById('errorMessage').classList.remove('hidden');
+                    }
                     setTimeout(() => {
                         document.getElementById('successMessage').classList.add('hidden');
+                        document.getElementById('errorMessage').classList.add('hidden');
                         resetForm();
                     }, 2000);
                 })
