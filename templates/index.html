@@ -79,11 +79,18 @@
             border: none;
             cursor: pointer;
             font-weight: 600;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         button:hover {
             background-color: #0056b3;
+            transform: translateY(-3px); /* Slightly lift the button */
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1); /* Add shadow for a floating effect */
+        }
+
+        button:active {
+            transform: translateY(2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
         .table-container {
@@ -105,7 +112,7 @@
         th, td {
             padding: 10px;
             border: 1px solid #ddd;
-            text-align: left;
+            text-align: center;
         }
 
         th {
@@ -136,7 +143,15 @@
         .success-message {
             color: #28a745;
             font-size: 18px;
-            margin-top: 20px;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 100;
         }
 
         .error-message {
