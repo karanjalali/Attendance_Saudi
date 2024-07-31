@@ -216,6 +216,8 @@
         <div id="loader" class="loader hidden"></div>
         <div id="successMessage" class="success-message hidden">Form submitted successfully!</div>
         <div id="errorMessage" class="error-message hidden">There was an error submitting the form. Please try again.</div>
+        <!-- Success sound -->
+        <audio id="successSound" src="/static/success-sound.mp3"></audio>
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -292,6 +294,7 @@
                     document.getElementById('loader').classList.add('hidden');
                     if (result && result.topperName) {
                         document.getElementById('successMessage').classList.remove('hidden');
+                        document.getElementById('successSound').play(); // Play success sound
                     } else {
                         document.getElementById('errorMessage').classList.remove('hidden');
                     }
