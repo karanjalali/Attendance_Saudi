@@ -19,7 +19,7 @@ creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
 client = gspread.authorize(creds)
 
 # Open the spreadsheet by URL
-spreadsheet = client.open_by_url("https://docs.google.com/spreadsheets/d/1-JBOTTfWizQnY4-JFXVPhCbFuWkcqutNMgd-L_NoFak/edit?gid=1886189268#gid=1886189268")
+spreadsheet = client.open_by_url("https://docs.google.com/spreadsheets/d/1-JBOTTfWizQnY4-JFXVPhCbFuWkcqutNMgd-L_NoFak")
 sheet = spreadsheet.worksheet("AttendanceData")
 response_sheet = spreadsheet.worksheet("FormResponses")
 
