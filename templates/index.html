@@ -335,21 +335,24 @@
         function populateStudentTable(students, batchName) {
             const tableBody = document.querySelector('#studentTable tbody');
             tableBody.innerHTML = '';
-            students.filter(student => student.batchName === batchName).forEach(student => {
-                tableBody.innerHTML += `
-                    <tr>
-                        <td>${student.studentName}</td>
-                        <td>
-                            <select required>
-                            ${['Null', 'AA', 'AB', 'AC', 'BA', 'BB', 'BC', 'CA', 'CB', 'CC', 'DD'].map(grade => `<option value="${grade}">${grade}</option>`).join('')}
-                        </select>
-                        </td>
-                        <td><input type="checkbox" checked></td>
-                        <td><input type="number" min="0" max="10" value="0" required></td>
-                    </tr>
-                `;
-            });
-        }
+            students
+                .filter(student => student.batchName === batchName)
+                .sort((a, b) => a.studentName.localeCompare(b.studentName))  // This line sorts the students alphabetically
+                .forEach(student => {
+                    tableBody.innerHTML += `
+                        <tr>
+                            <td>${student.studentName}</td>
+                            <td>
+                                <select required>
+                                ${['Null', 'AA', 'AB', 'AC', 'BA', 'BB', 'BC', 'CA', 'CB', 'CC', 'DD'].map(grade => `<option value="${grade}">${grade}</option>`).join('')}
+                    </select>
+                    </td>
+                    <td><input type="checkbox" checked></td>
+                    <td><input type="number" min="0" max="10" value="0" required></td>
+                </tr>
+            `;
+        });
+       }
 
         function loadChapters() {
             const grade = document.getElementById('grade').value;
