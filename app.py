@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template, send_from_directory
+from flask import Flask, request, jsonify, render_template, send_from_directory, redirect, url_for, session
 from flask_cors import CORS
 from dotenv import load_dotenv
 load_dotenv()
@@ -10,16 +10,19 @@ from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
 
 app = Flask(__name__)
+app.secret_key = 'your_secret_key'  # Needed for session management
 CORS(app, resources={r"/*": {"origins": "*"}})  # Enable CORS for all routes
+
+# Hardcoded credentials for simplicity
+USERNAME = 'admin'
+PASSWORD = 'password123'
 
 # Configure Google Sheets API credentials
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
 # Decode the base64 credentials
 credentials_json = base64.b64decode(os.environ.get('GOOGLE_APPLICATION_CREDENTIALS_BASE64')).decode('utf-8')
 creds_dict = json.loads(credentials_json)
-creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"])
-
-# Authorize the client with the credentials
+creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
 client = gspread.authorize(creds)
 
 # Open the spreadsheet by URL
@@ -28,8 +31,37 @@ sheet = spreadsheet.worksheet("AttendanceData")
 response_sheet = spreadsheet.worksheet("FormResponses")
 
 @app.route('/')
-def index():
-    return render_template('index.html')
+def home():
+    return redirect(url_for('login'))
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        
+        if username == USERNAME and password == PASSWORD:
+            session['logged_in'] = True
+            print("Login successful")
+            return redirect(url_for('attendance_form'))
+        else:
+            error = 'Invalid credentials. Please try again.'
+            print("Login failed")
+            return render_template('login.html', error=error)
+    print("Displaying login page")
+    return render_template('login.html')
+
+@app.route('/attendance_form')
+def attendance_form():
+    if 'logged_in' in session and session['logged_in']:
+        return render_template('index.html')  # Assuming this is your attendance form
+    else:
+        return redirect(url_for('login'))
+
+@app.route('/logout')
+def logout():
+    session.pop('logged_in', None)
+    return redirect(url_for('login'))
 
 @app.route('/static/<path:filename>')
 def serve_static(filename):
@@ -67,38 +99,10 @@ def get_chapters():
     subject = request.args.get('subject')
     
     try:
-        # Open the Google Sheet by ID and select the 'Chapters' sheet
         sheet = client.open_by_key('1-JBOTTfWizQnY4-JFXVPhCbFuWkcqutNMgd-L_NoFak').worksheet('Chapters')
-        
-        # Get all data from the sheet
         data = sheet.get_all_values()
-        
-        # Log all data for debugging
-        print(f"All data from 'Chapters' sheet: {data}")
-        
-        # Filter data based on the grade and subject, then map to get the chapters
         chapters = [row[2] for row in data if row[0] == grade and row[1] == subject]
-        
-        # Log the filtered chapters for debugging
-        print(f"Filtered chapters for Grade: {grade}, Subject: {subject}: {chapters}")
-        
         return jsonify({'chapters': chapters})
-    except Exception as e:
-        print(f'Error in get_chapters: {e}')
-        raise Exception('Failed to retrieve chapters')
-
-def get_chapters(subject, grade):
-    try:
-        # Open the Google Sheet by ID and select the 'Chapters' sheet
-        sheet = client.open_by_key('1-JBOTTfWizQnY4-JFXVPhCbFuWkcqutNMgd-L_NoFak').worksheet('AttendanceData')
-        
-        # Get all data from the sheet
-        data = sheet.get_all_values()
-        
-        # Filter data based on the grade and subject, then map to get the chapters
-        chapters = [row[7] for row in data if row[6] == grade and row[7] == subject]
-        
-        return chapters
     except Exception as e:
         print(f'Error in get_chapters: {e}')
         raise Exception('Failed to retrieve chapters')
@@ -118,7 +122,6 @@ def submit():
     student_data = data['studentData']
     class_type = data['classType']
 
-    # Collect all rows of data
     rows_to_add = []
     for student in student_data:
         rows_to_add.append([
@@ -127,10 +130,8 @@ def submit():
             grade, teacher_name, branch_name, batch_name, date, time, subtopic_name
         ])
 
-    # Append all rows at once
     response_sheet.append_rows(rows_to_add)
 
-    # Calculate the topper and present count
     quiz_scores = [int(student['quizScore']) for student in student_data if student['present'] == 'Present']
     topper = max(student_data, key=lambda x: int(x['quizScore']) if x['present'] == 'Present' else 0)
     present_count = sum(1 for student in student_data if student['present'] == 'Present')
@@ -141,4 +142,4 @@ def submit():
     })
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000, debug=True)  # Ensure it's accessible
+    app.run(host='0.0.0.0', port=5000, debug=True)
