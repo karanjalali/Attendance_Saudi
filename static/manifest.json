@@ -1,34 +1,21 @@
 {
-  "id": "/",
-  "name": "Attendance Form",
-  "short_name": "Attendance",
-  "description": "Attendance Form for Students",
-  "start_url": "/",
-  "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#007bff",
-  "icons": [
-    {
-      "src": "/static/icon-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "/static/icon-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "/static/screenshot-wide.png",
-      "sizes": "800x600",
-      "type": "image/png"
-    },
-    {
-      "src": "/static/screenshot-mobile.png",
-      "sizes": "320x640",
-      "type": "image/png"
-    }
-  ]
-}
+    "name": "Attendance Form UAE",
+    "short_name": "AttendanceUAE",
+    "description": "Attendance Form for Students in UAE",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#007bff",
+    "icons": [
+      {
+        "src": "/static/icon-192x192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "/static/icon-512x512.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ]
+  }

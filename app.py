@@ -110,8 +110,9 @@ def get_chapters():
 @app.route('/submit', methods=['POST'])
 def submit():
     data = request.json
-    date = datetime.now().strftime("%Y-%m-%d")
-    time = datetime.now().strftime("%H:%M:%S")
+    # Use the manually entered date and time if provided, otherwise use current date and time
+    date = data.get('date') or datetime.now().strftime("%Y-%m-%d")
+    time = data.get('time') or datetime.now().strftime("%H:%M:%S")
     branch_name = data['branchName']
     batch_name = data['batchName']
     grade = data['grade']
@@ -119,15 +120,19 @@ def submit():
     subject_name = data['subjectName']
     chapter_name = data['chapterName']
     subtopic_name = data['subtopicName']
-    student_data = data['studentData']
     class_type = data['classType']
+    assignment_quiz_topic = data['assignmentQuizTopic']
+    speed_quiz_topic = data['speedQuizTopic']
+    comments = data['comments']
+    student_data = data['studentData']
 
     rows_to_add = []
     for student in student_data:
         rows_to_add.append([
             student['studentName'], student['assignmentGrade'], class_type, student['present'],
             student['quizScore'], subject_name, chapter_name,
-            grade, teacher_name, branch_name, batch_name, date, time, subtopic_name
+            grade, teacher_name, branch_name, batch_name, date, time, subtopic_name,
+            assignment_quiz_topic, speed_quiz_topic, comments  # New fields added here
         ])
 
     response_sheet.append_rows(rows_to_add)

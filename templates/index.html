@@ -199,6 +199,16 @@
             <select id="classType" name="classType" required>
                 <option value="">Select Class Type</option>
             </select>
+            <label for="date">Date:</label>
+            <input type="date" id="date" name="date">
+            <label for="time">Time:</label>
+            <input type="time" id="time" name="time">
+            <label for="assignmentQuizTopic">Assignment Quiz Topic:</label>
+            <input type="text" id="assignmentQuizTopic" name="assignmentQuizTopic">
+            <label for="speedQuizTopic">Speed Quiz Topic:</label>
+            <input type="text" id="speedQuizTopic" name="speedQuizTopic">
+            <label for="comments">Comments:</label>
+            <input type="text" id="comments" name="comments">
             <div class="table-container">
                 <table id="studentTable">
                     <thead>
@@ -278,6 +288,11 @@
                     chapterName: document.getElementById('chapter').value,
                     subtopicName: document.getElementById('subtopic').value,
                     classType: document.getElementById('classType').value,
+                    date: document.getElementById('date').value,  // Added date field
+                    time: document.getElementById('time').value,  // Added time field
+                    assignmentQuizTopic: document.getElementById('assignmentQuizTopic').value,  // Added Assignment Quiz Topic
+                    speedQuizTopic: document.getElementById('speedQuizTopic').value,  // Added Speed Quiz Topic
+                    comments: document.getElementById('comments').value,  // Added Comments
                     studentData: studentData
                 };
 
@@ -318,7 +333,7 @@
         });
 
         function validateForm() {
-            const requiredFields = ['branch', 'batch', 'grade', 'teacher', 'subject', 'chapter', 'subtopic', 'classType'];
+            const requiredFields = ['branch', 'batch', 'grade', 'teacher', 'subject', 'chapter', 'subtopic', 'classType', 'date', 'time'];
             for (const field of requiredFields) {
                 if (document.getElementById(field).value === '') {
                     return false;
@@ -348,14 +363,14 @@
                             <td>
                                 <select required>
                                 ${['Null', 'AA', 'AB', 'AC', 'BA', 'BB', 'BC', 'CA', 'CB', 'CC', 'DD'].map(grade => `<option value="${grade}">${grade}</option>`).join('')}
-                    </select>
-                    </td>
-                    <td><input type="checkbox" checked></td>
-                    <td><input type="number" min="0" max="10" value="0" required></td>
-                </tr>
-            `;
-        });
-       }
+                                </select>
+                            </td>
+                            <td><input type="checkbox" checked></td>
+                            <td><input type="number" min="0" max="10" value="0" required></td>
+                        </tr>
+                    `;
+                });
+        }
 
         function loadChapters() {
             const grade = document.getElementById('grade').value;
@@ -385,15 +400,16 @@
             tableBody.innerHTML = '';
         }
     });
+    
     if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/service-worker.js')
-    .then(function(registration) {
-      console.log('Service Worker registered with scope:', registration.scope);
-    })
-    .catch(function(error) {
-      console.log('Service Worker registration failed:', error);
-    });
-  }
+        navigator.serviceWorker.register('/service-worker.js')
+            .then(function(registration) {
+                console.log('Service Worker registered with scope:', registration.scope);
+            })
+            .catch(function(error) {
+                console.log('Service Worker registration failed:', error);
+            });
+    }
     </script>
 </body>
 </html>
