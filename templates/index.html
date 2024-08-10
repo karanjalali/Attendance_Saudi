@@ -247,12 +247,16 @@
                     populateDropdown('subject', data.subjects);
                     populateDropdown('grade', data.grades);
                     populateDropdown('classType', data.classTypes);
-                    populateDropdown('batch', data.batches);
 
                     const gradeSelect = document.getElementById('grade');
                     const subjectSelect = document.getElementById('subject');
                     gradeSelect.addEventListener('change', loadChapters);
                     subjectSelect.addEventListener('change', loadChapters);
+
+                    const branchSelect = document.getElementById('branch');
+                    branchSelect.addEventListener('change', function() {
+                        loadBatches(branchSelect.value);
+                    });
 
                     const batchSelect = document.getElementById('batch');
                     batchSelect.addEventListener('change', function() {
@@ -394,13 +398,25 @@
             }
         }
 
+        function loadBatches(branch) {
+            fetch(`/get_batches?branch=${branch}`)
+                .then(response => response.json())
+                .then(data => {
+                    populateDropdown('batch', data.batches);
+                })
+                .catch(error => {
+                    console.error('Error fetching batches:', error); // Debugging line
+                    document.getElementById('errorMessage').classList.remove('hidden');
+                });
+        }
+
         function resetForm() {
             document.getElementById('studentForm').reset();
             const tableBody = document.querySelector('#studentTable tbody');
             tableBody.innerHTML = '';
         }
     });
-    
+
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/service-worker.js')
             .then(function(registration) {

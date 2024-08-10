@@ -30,6 +30,11 @@ spreadsheet = client.open_by_url("https://docs.google.com/spreadsheets/d/1-JBOTT
 sheet = spreadsheet.worksheet("AttendanceData")
 response_sheet = spreadsheet.worksheet("FormResponses")
 
+# Load chapters data from JSON file
+def load_chapters_data():
+    with open('chapters.json') as f:
+        return json.load(f)
+
 @app.route('/')
 def home():
     return redirect(url_for('login'))
@@ -74,7 +79,17 @@ def get_data():
     subjects = sorted(list(set(sheet.col_values(7)[1:])))
     grades = sorted(list(set(sheet.col_values(6)[1:])))
     class_types = sorted(list(set(sheet.col_values(3)[1:])))
-    batches = sorted(list(set([rec['Batch'] for rec in sheet.get_all_records()])))
+    
+    # Create a branch-to-batch mapping
+    batch_data = sheet.get_all_records()
+    branch_batch_mapping = {}
+    for record in batch_data:
+        branch = record['Branch']
+        batch = record['Batch']
+        if branch not in branch_batch_mapping:
+            branch_batch_mapping[branch] = []
+        if batch not in branch_batch_mapping[branch]:
+            branch_batch_mapping[branch].append(batch)
 
     student_records = sheet.get_all_records()
     students = [{'branchName': rec['Branch'], 'batchName': rec['Batch'], 'studentName': rec['Student']} for rec in student_records]
@@ -90,8 +105,21 @@ def get_data():
         'students': students,
         'chapterNames': chapter_names,
         'assignmentGrades': assignment_grades,
-        'batches': batches
+        'branchBatchMapping': branch_batch_mapping  # Return branch-batch mapping
     })
+
+@app.route('/get_batches', methods=['GET'])
+def get_batches():
+    branch = request.args.get('branch')
+    batches = []
+    
+    # Load the branch-batch mapping from the get_data response
+    branch_batch_mapping = get_data().json.get('branchBatchMapping')
+    
+    if branch in branch_batch_mapping:
+        batches = branch_batch_mapping[branch]
+    
+    return jsonify({'batches': batches})
 
 @app.route('/get_chapters', methods=['GET'])
 def get_chapters():
@@ -99,9 +127,11 @@ def get_chapters():
     subject = request.args.get('subject')
     
     try:
-        sheet = client.open_by_key('1-JBOTTfWizQnY4-JFXVPhCbFuWkcqutNMgd-L_NoFak').worksheet('Chapters')
-        data = sheet.get_all_values()
-        chapters = [row[2] for row in data if row[0] == grade and row[1] == subject]
+        chapters_data = load_chapters_data()
+        if grade in chapters_data and subject in chapters_data[grade]:
+            chapters = chapters_data[grade][subject]
+        else:
+            chapters = []
         return jsonify({'chapters': chapters})
     except Exception as e:
         print(f'Error in get_chapters: {e}')
@@ -110,8 +140,8 @@ def get_chapters():
 @app.route('/submit', methods=['POST'])
 def submit():
     data = request.json
-    # Use the manually entered date and time if provided, otherwise use current date and time
-    date = data.get('date') or datetime.now().strftime("%Y-%m-%d")
+    # Format the date as "9-Aug-24"
+    date = datetime.strptime(data.get('date') or datetime.now().strftime("%Y-%m-%d"), "%Y-%m-%d").strftime("%d-%b-%y")
     time = data.get('time') or datetime.now().strftime("%H:%M:%S")
     branch_name = data['branchName']
     batch_name = data['batchName']
