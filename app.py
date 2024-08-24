@@ -9,7 +9,7 @@ import base64
 from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='', static_folder='static')
 app.secret_key = 'your_secret_key'  # Needed for session management
 CORS(app, resources={r"/*": {"origins": "*"}})  # Enable CORS for all routes
 
@@ -59,7 +59,7 @@ def login():
 @app.route('/attendance_form')
 def attendance_form():
     if 'logged_in' in session and session['logged_in']:
-        return render_template('index.html')  # Assuming this is your attendance form
+        return render_template('index.html')  # Serve index.html from the templates folder
     else:
         return redirect(url_for('login'))
 
