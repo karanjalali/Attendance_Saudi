@@ -19,8 +19,9 @@ PASSWORD = 'password123'
 
 # Configure Google Sheets API credentials
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-# Decode the base64 credentials
-credentials_json = base64.b64decode(os.environ.get('GOOGLE_APPLICATION_CREDENTIALS_BASE64')).decode('utf-8')
+# Decode the base64 credentials from the environment variable
+encoded_key = os.getenv("GOOGLE_APPLICATION_CREDENTIALS_BASE64")
+credentials_json = base64.b64decode(encoded_key).decode('utf-8')
 creds_dict = json.loads(credentials_json)
 creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
 client = gspread.authorize(creds)
@@ -74,39 +75,50 @@ def serve_static(filename):
 
 @app.route('/get_data')
 def get_data():
-    branches = sorted(list(set(sheet.col_values(10)[1:])))
-    teachers = sorted(list(set(sheet.col_values(9)[1:])))
-    subjects = sorted(list(set(sheet.col_values(7)[1:])))
-    grades = sorted(list(set(sheet.col_values(6)[1:])))
-    class_types = sorted(list(set(sheet.col_values(3)[1:])))
-    
-    # Create a branch-to-batch mapping
-    batch_data = sheet.get_all_records()
-    branch_batch_mapping = {}
-    for record in batch_data:
-        branch = record['Branch']
-        batch = record['Batch']
-        if branch not in branch_batch_mapping:
-            branch_batch_mapping[branch] = []
-        if batch not in branch_batch_mapping[branch]:
-            branch_batch_mapping[branch].append(batch)
+    try:
+        branches = sorted(list(set(sheet.col_values(10)[1:])))
+        teachers = sorted(list(set(sheet.col_values(9)[1:])))
+        subjects = sorted(list(set(sheet.col_values(7)[1:])))
+        grades = sorted(list(set(sheet.col_values(6)[1:])))
+        class_types = sorted(list(set(sheet.col_values(3)[1:])))
+        
+        # Log the results to see if they're fetched correctly
+        print(f"Branches: {branches}")
+        print(f"Teachers: {teachers}")
+        print(f"Subjects: {subjects}")
+        print(f"Grades: {grades}")
+        print(f"Class Types: {class_types}")
 
-    student_records = sheet.get_all_records()
-    students = [{'branchName': rec['Branch'], 'batchName': rec['Batch'], 'studentName': rec['Student']} for rec in student_records]
-    chapter_names = [{'subjectName': rec['Subject'], 'chapterName': rec['Chapter Name']} for rec in student_records]
-    assignment_grades = list(set([rec['Assignment Grade'] for rec in student_records]))
+        # Create a branch-to-batch mapping
+        batch_data = sheet.get_all_records()
+        branch_batch_mapping = {}
+        for record in batch_data:
+            branch = record['Branch']
+            batch = record['Batch']
+            if branch not in branch_batch_mapping:
+                branch_batch_mapping[branch] = []
+            if batch not in branch_batch_mapping[branch]:
+                branch_batch_mapping[branch].append(batch)
 
-    return jsonify({
-        'branches': branches,
-        'teachers': teachers,
-        'subjects': subjects,
-        'grades': grades,
-        'classTypes': class_types,
-        'students': students,
-        'chapterNames': chapter_names,
-        'assignmentGrades': assignment_grades,
-        'branchBatchMapping': branch_batch_mapping  # Return branch-batch mapping
-    })
+        student_records = sheet.get_all_records()
+        students = [{'branchName': rec['Branch'], 'batchName': rec['Batch'], 'studentName': rec['Student']} for rec in student_records]
+        chapter_names = [{'subjectName': rec['Subject'], 'chapterName': rec['Chapter Name']} for rec in student_records]
+        assignment_grades = list(set([rec['Assignment Grade'] for rec in student_records]))
+
+        return jsonify({
+            'branches': branches,
+            'teachers': teachers,
+            'subjects': subjects,
+            'grades': grades,
+            'classTypes': class_types,
+            'students': students,
+            'chapterNames': chapter_names,
+            'assignmentGrades': assignment_grades,
+            'branchBatchMapping': branch_batch_mapping  # Return branch-batch mapping
+        })
+    except Exception as e:
+        print(f"Error in /get_data: {e}")
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/get_batches', methods=['GET'])
 def get_batches():
