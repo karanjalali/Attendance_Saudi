@@ -1,0 +1,214 @@
+Grade,Subject,Chapter Name
+9,Physics,MOTION
+9,Physics,FORCE AND LAWS OF MOTION
+9,Physics,GRAVITATION
+9,Physics,Work and energy
+9,Physics,Sound
+9,Chemistry,The Matter In Our Surroundings
+9,Chemistry,Is Matter Around Us Pure
+9,Chemistry,Atoms and Molecules
+9,Chemistry,Structure of Atom
+9,Maths,Number system
+9,Maths,Polynomials
+9,Maths,Introduction to Euclid's geometry
+9,Maths,Lines and angles
+9,Maths,Triangles
+9,Maths,Coordinate geometry
+9,Maths,Heron's formula
+9,Maths,Linear equations in two variables
+9,Maths,Quadrilaterals
+9,Maths,Circles
+9,Maths,Constructions
+9,Maths,Surface area and volume
+9,Maths,Statistics
+9,Maths,Probability
+9,Biology,The Fundamental Unit of Life
+9,Biology,Tissues
+9,Biology,Diversity in Living Organisms
+9,Biology,Why do We Fall ill
+9,Biology,Natural Resources
+9,Biology,Improvement in Food Resources
+10,Chemistry,Chemical Reactios and Equations
+10,Chemistry,"Acids,Bases and Salts"
+10,Chemistry,Metals and NoN metals
+10,Chemistry,Carbon and its Compounds
+10,Chemistry,Periodic Classification of Elements
+10,Biology,Life Processes
+10,Biology,Control and coordination
+10,Biology,How do Organisms Reproduce
+10,Biology,Heredity
+10,Biology,Our Environment
+10,Biology,Management of Natural resourses
+10,Physics,Electicity
+10,Physics,Magnetic Effects of Electric Current
+10,Physics,Sources of Energy
+10,Physics,Human Eye and colourful world
+10,Physics,Light Reflection & Refractions
+10,Maths,Real Numbers
+10,Maths,polynomial
+10,Maths,Pair of Linear Equatiuons in two variables
+10,Maths,Triangles
+10,Maths,Introduction to Trignometry
+10,Maths,Statistics
+10,Maths,Quadratic Equations
+10,Maths,Arithmetic progressions
+10,Maths,Cordinate Geometry
+10,Maths,Some Application of Trignometry
+10,Maths,Circles
+10,Maths,Construction
+10,Maths,Areas Related to circles
+10,Maths,Surface Areas and volumes
+10,Maths,Probability
+11,Physics,Units And Measurements
+11,Physics,Motion In A Straight Line
+11,Physics,Motion In A Plane
+11,Physics,Laws Of Motion
+11,Physics,Work Energy And Power
+11,Physics,System Of Particles And Rotational Motion
+11,Physics,Gravitation
+11,Physics,Mechanical Properties Of Solids
+11,Physics,Mechanical Properties Of Fluids
+11,Physics,Thermal Properties Of Matter
+11,Physics,Thermodynamics
+11,Physics,Kinetic Theory
+11,Physics,Oscillations
+11,Physics,Waves
+11,Chemistry,Some Basic Concepts Of Chemistry
+11,Chemistry,Structure Of Atom
+11,Chemistry,Classification Of Elements and Peridicity in Properties
+11,Chemistry,Chemical Bonding and molecular Structure
+11,Chemistry,States Of Matter
+11,Chemistry,Thermodynamics
+11,Chemistry,Equilibrium
+11,Chemistry,Redox Reactions
+11,Chemistry,Hydrogen
+11,Chemistry,The s-Block Elements
+11,Chemistry,The p-Block Elements
+11,Chemistry,Organic Chemistry- Some basic Principles And Techniques
+11,Chemistry,Hydrocarbons
+11,Chemistry,Environmental Chemistry
+11,Maths,Sets
+11,Maths,Relations And Functions
+11,Maths,Trigonometric Functions
+11,Maths,Principle Of Mathematical Induction
+11,Maths,Complex Numbers And Quadratic Equation
+11,Maths,Linear Inequalities
+11,Maths,Permutations And Combinations
+11,Maths,Binomial Theroem
+11,Maths,Sequences And Series
+11,Maths,Straight Lines
+11,Maths,Conic Sections
+11,Maths,Introduction to Three Dimensional Geometry
+11,Maths,Limits and Derivatives
+11,Maths,Mathematical Reasoning
+11,Maths,Statistics
+11,Maths,Probability
+11,Biology,The Living World
+11,Biology,Biological Classification
+11,Biology,Plant Kingdom
+11,Biology,Animal Kingdom
+11,Biology,Morphology of Flowering Plants
+11,Biology,Anatomy of Flowering Plants
+11,Biology,Structural Organisation in Animals
+11,Biology,Cell-The Unit of Life
+11,Biology,Biomolecules
+11,Biology,Cell Cycle and Cell Division
+11,Biology,Transport in Plants
+11,Biology,Mineral Nutrition
+11,Biology,Photosynthesis in Higher Plants
+11,Biology,Respiration in Plants
+11,Biology,Plant - Growth and Development
+11,Biology,Digestion and Absorption
+11,Biology,Breathing and Exchange of Gases
+11,Biology,Body Fluids and Circulation
+11,Biology,Excretory Products and Their Elimination
+11,Biology,Locomotion and Movement
+11,Biology,Neural Control and Coordination
+11,Biology,Chemical Coordination and Integration
+12,Physics,Electric Charges And Field
+12,Physics,Electrostatic Potential And Capacitance
+12,Physics,Current Electricity
+12,Physics,Moving Charges And Magnetism
+12,Physics,Magnetism And Matter
+12,Physics,Electronmagnetic Induction
+12,Physics,Alternating Current
+12,Physics,Electromagnetic Waves
+12,Physics,Ray Optics And Optical Instruments
+12,Physics,Wave Optics
+12,Physics,Dual Nature Of Radiation And Matter
+12,Physics,Atoms
+12,Physics,Nuclei
+12,Physics,Semiconductor Electronics : Materials Devices And Simple Circuits
+12,Physics,Communication Systems
+12,Chemistry,The Solid State
+12,Chemistry,Solutions
+12,Chemistry,Electrochemistry
+12,Chemistry,Chemical Kinetics
+12,Chemistry,Surface Chemistry
+12,Chemistry,General Principles And Processes of Isolation
+12,Chemistry,The p-Block Elements
+12,Chemistry,The d -and f-Block Elements
+12,Chemistry,Coordination Compounds
+12,Chemistry,Haloalkanes and Haloarenes
+12,Chemistry,"Alcohols,Phenols and Ethers"
+12,Chemistry,"Aldehyds,Ketones and Carbolic Acids"
+12,Chemistry,Amines
+12,Chemistry,Biomolecules
+12,Chemistry,Polymers
+12,Chemistry,Chemistry in Everyday Life
+12,Maths,Relations and Functions
+12,Maths,Inverse Trigonometric Functions
+12,Maths,Matrices
+12,Maths,Determinants
+12,Maths,Continuity and Differentiability
+12,Maths,Application of Derivatives
+12,Maths,Integrals
+12,Maths,Application of Integrals
+12,Maths,Differential Equations
+12,Maths,Vector Algebra
+12,Maths,Three Dimensional Geometry
+12,Maths,Linear Programming
+12,Maths,Probablity
+12,Biology,Reproduction in Organisms
+12,Biology,Sexual Reproduction in Flowering Plants
+12,Biology,Human Reproduction
+12,Biology,Reproductive Health
+12,Biology,Principles of Inheritance and Variation
+12,Biology,Molecular Basis of Inheritance
+12,Biology,Evolution
+12,Biology,Human Health and Diseases
+12,Biology,Strategies for Enhancement in Food Production
+12,Biology,Microbes in Human Welfare
+12,Biology,Biotechnology - Principles and Processes
+12,Biology,Biotechnology and its Application
+12,Biology,Organisms and Populations
+12,Biology,Ecosystem
+12,Biology,Biodiversity and its Conservation
+12,Biology,Environmental Issues
+8,Physics,Force and Pressure
+8,Physics,Friction
+8,Physics,Sound
+8,Physics,Some Natural Phenomena
+8,Physics,Light
+8,Chemistry,Coal and Petroleum
+8,Chemistry,Combustion and Flame
+8,Chemistry,Chemical Effects of Electric Current
+8,Maths,Rational Numbers
+8,Maths,Linear Equations in One Variable
+8,Maths,Understanding Quadrilaterals
+8,Maths,Data Handling
+8,Maths,Squares and Square Roots
+8,Maths,Cubes and Cube Roots
+8,Maths,Comparing Quantities
+8,Maths,Algebraic Expressions and Identities
+8,Maths,Mensuration
+8,Maths,Exponents and Powers
+8,Maths,Direct and Inverse Proportions
+8,Maths,Factorisation
+8,Maths,Introduction to Graphs
+8,Biology,Crop Production and Management
+8,Biology,Microorganisms: Friend and Foe
+8,Biology,Conservation of Plants and Animals
+8,Biology,Reproduction in Animals
+8,Biology,Reaching the Age of Adolescence
+8,Biology,Some Natural Phenomena

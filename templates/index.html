@@ -87,8 +87,8 @@
 
         button:hover {
             background-color: #0056b3;
-            transform: translateY(-3px); /* Slightly lift the button */
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1); /* Add shadow for a floating effect */
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
         }
 
         button:active {
@@ -98,9 +98,9 @@
 
         .table-container {
             overflow-x: auto;
-            overflow-y: scroll; /* Enable vertical scrolling */
+            overflow-y: scroll;
             margin-top: 20px;
-            max-height: auto; /* Limit the height of the table */
+            max-height: auto;
             border: 1px solid #ddd;
             padding: 10px;
             border-radius: 5px;
@@ -292,11 +292,11 @@
                     chapterName: document.getElementById('chapter').value,
                     subtopicName: document.getElementById('subtopic').value,
                     classType: document.getElementById('classType').value,
-                    date: document.getElementById('date').value,  // Added date field
-                    time: document.getElementById('time').value,  // Added time field
-                    assignmentQuizTopic: document.getElementById('assignmentQuizTopic').value,  // Added Assignment Quiz Topic
-                    speedQuizTopic: document.getElementById('speedQuizTopic').value,  // Added Speed Quiz Topic
-                    comments: document.getElementById('comments').value,  // Added Comments
+                    date: document.getElementById('date').value,
+                    time: document.getElementById('time').value,
+                    assignmentQuizTopic: document.getElementById('assignmentQuizTopic').value,
+                    speedQuizTopic: document.getElementById('speedQuizTopic').value,
+                    comments: document.getElementById('comments').value,
                     studentData: studentData
                 };
 
@@ -305,35 +305,30 @@
                 document.getElementById('errorMessage').classList.add('hidden');
 
                 fetch('/submit', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                })
-                .then(response => response.json())
-                .then(result => {
-                    document.getElementById('loader').classList.add('hidden');
-                    if (result && result.topperName) {
-                        document.getElementById('successMessage').classList.remove('hidden');
-                        document.getElementById('successSound').play(); // Play success sound
-                    } else {
-                        document.getElementById('errorMessage').classList.remove('hidden');
-                    }
-                    setTimeout(() => {
-                        document.getElementById('successMessage').classList.add('hidden');
-                        document.getElementById('errorMessage').classList.add('hidden');
-                        resetForm();
-                    }, 2000);
-                })
-                .catch(error => {
-                    console.error('Error submitting form:', error); // Debugging line
-                    document.getElementById('loader').classList.add('hidden');
-                    document.getElementById('errorMessage').classList.remove('hidden');
-                    setTimeout(() => {
-                        document.getElementById('errorMessage').classList.add('hidden');
-                    }, 5000);
-                });
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+})
+.then(response => response.json().catch(() => {
+    console.error("Failed to parse JSON");
+    return { error: "Invalid JSON response from server" };
+}))
+.then(result => {
+    if (result.error) {
+        console.error("Error from server:", result.error);
+        document.getElementById('errorMessage').classList.remove('hidden');
+    } else {
+        // Handle success
+        document.getElementById('successMessage').classList.remove('hidden');
+        document.getElementById('successSound').play();
+    }
+})
+.catch(error => {
+    console.error('Error submitting form:', error);
+    document.getElementById('errorMessage').classList.remove('hidden');
+});
         });
 
         function validateForm() {
@@ -389,6 +384,7 @@
                             populateDropdown('chapter', data.chapters);
                         } else {
                             console.log('No chapters found for the selected grade and subject.');
+                            alert("No chapters found for the selected grade and subject.");
                         }
                     })
                     .catch(error => {
@@ -399,16 +395,16 @@
         }
 
         function loadBatches(branch) {
-            fetch(`/get_batches?branch=${branch}`)
-                .then(response => response.json())
-                .then(data => {
-                    populateDropdown('batch', data.batches);
-                })
-                .catch(error => {
-                    console.error('Error fetching batches:', error); // Debugging line
-                    document.getElementById('errorMessage').classList.remove('hidden');
-                });
-        }
+    fetch(`/get_batches?branch=${encodeURIComponent(branch)}`)
+        .then(response => response.json())
+        .then(data => {
+            populateDropdown('batch', data.batches);
+        })
+        .catch(error => {
+            console.error('Error fetching batches:', error); // Debugging line
+            document.getElementById('errorMessage').classList.remove('hidden');
+        });
+}
 
         function resetForm() {
             document.getElementById('studentForm').reset();
