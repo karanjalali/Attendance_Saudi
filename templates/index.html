@@ -268,69 +268,72 @@
                     document.getElementById('errorMessage').classList.remove('hidden');
                 });
 
-            document.getElementById('submitBtn').addEventListener('click', function() {
-                if (!validateForm()) {
-                    alert('Please fill all the required fields.');
-                    return;
-                }
-                const studentData = Array.from(document.querySelectorAll('#studentTable tbody tr')).map(row => {
-                    const cells = row.querySelectorAll('td');
-                    return {
-                        studentName: cells[0].innerText,
-                        assignmentGrade: cells[1].querySelector('select').value,
-                        present: cells[2].querySelector('input').checked ? 'Present' : 'Absent',
-                        quizScore: cells[3].querySelector('input').value
-                    };
-                });
-
-                const data = {
-                    branchName: document.getElementById('branch').value,
-                    batchName: document.getElementById('batch').value,
-                    grade: document.getElementById('grade').value,
-                    teacherName: document.getElementById('teacher').value,
-                    subjectName: document.getElementById('subject').value,
-                    chapterName: document.getElementById('chapter').value,
-                    subtopicName: document.getElementById('subtopic').value,
-                    classType: document.getElementById('classType').value,
-                    date: document.getElementById('date').value,
-                    time: document.getElementById('time').value,
-                    assignmentQuizTopic: document.getElementById('assignmentQuizTopic').value,
-                    speedQuizTopic: document.getElementById('speedQuizTopic').value,
-                    comments: document.getElementById('comments').value,
-                    studentData: studentData
-                };
-
-                document.getElementById('loader').classList.remove('hidden');
-                document.getElementById('successMessage').classList.add('hidden');
-                document.getElementById('errorMessage').classList.add('hidden');
-
-                fetch('/submit', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
-})
-.then(response => response.json().catch(() => {
-    console.error("Failed to parse JSON");
-    return { error: "Invalid JSON response from server" };
-}))
-.then(result => {
-    if (result.error) {
-        console.error("Error from server:", result.error);
-        document.getElementById('errorMessage').classList.remove('hidden');
-    } else {
-        // Handle success
-        document.getElementById('successMessage').classList.remove('hidden');
-        document.getElementById('successSound').play();
+                document.getElementById('submitBtn').addEventListener('click', function() {
+    if (!validateForm()) {
+        alert('Please fill all the required fields.');
+        return;
     }
-})
-.catch(error => {
-    console.error('Error submitting form:', error);
-    document.getElementById('errorMessage').classList.remove('hidden');
-});
-        });
+    
+    const studentData = Array.from(document.querySelectorAll('#studentTable tbody tr')).map(row => {
+        const cells = row.querySelectorAll('td');
+        return {
+            studentName: cells[0].innerText,
+            assignmentGrade: cells[1].querySelector('select').value,
+            present: cells[2].querySelector('input').checked ? 'Present' : 'Absent',
+            quizScore: cells[3].querySelector('input').value
+        };
+    });
 
+    const data = {
+        branchName: document.getElementById('branch').value,
+        batchName: document.getElementById('batch').value,
+        grade: document.getElementById('grade').value,
+        teacherName: document.getElementById('teacher').value,
+        subjectName: document.getElementById('subject').value,
+        chapterName: document.getElementById('chapter').value,
+        subtopicName: document.getElementById('subtopic').value,
+        classType: document.getElementById('classType').value,
+        date: document.getElementById('date').value,
+        time: document.getElementById('time').value,
+        assignmentQuizTopic: document.getElementById('assignmentQuizTopic').value,
+        speedQuizTopic: document.getElementById('speedQuizTopic').value,
+        comments: document.getElementById('comments').value,
+        studentData: studentData
+    };
+
+    document.getElementById('loader').classList.remove('hidden');
+    document.getElementById('successMessage').classList.add('hidden');
+    document.getElementById('errorMessage').classList.add('hidden');
+
+    fetch('/submit', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    })
+    .then(response => response.json().catch(() => {
+        console.error("Failed to parse JSON");
+        return { error: "Invalid JSON response from server" };
+    }))
+    .then(result => {
+        if (result.error) {
+            console.error("Error from server:", result.error);
+            document.getElementById('errorMessage').classList.remove('hidden');
+        } else {
+            // Handle success
+            document.getElementById('successMessage').classList.remove('hidden');
+            document.getElementById('successSound').play();
+            
+            // Reset the form after successful submission
+            resetForm();  // THIS LINE IS ADDED TO RESET THE FORM AFTER SUBMISSION
+        }
+    })
+    .catch(error => {
+        console.error('Error submitting form:', error);
+        document.getElementById('errorMessage').classList.remove('hidden');
+    });
+});
         function validateForm() {
             const requiredFields = ['branch', 'batch', 'grade', 'teacher', 'subject', 'chapter', 'subtopic', 'classType', 'date', 'time'];
             for (const field of requiredFields) {
