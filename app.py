@@ -35,9 +35,14 @@ creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
 client = gspread.authorize(creds)
 
 # Open the spreadsheet by URL
-spreadsheet = client.open_by_url("https://docs.google.com/spreadsheets/d/1-JBOTTfWizQnY4-JFXVPhCbFuWkcqutNMgd-L_NoFak")
+google_sheet_url = "https://docs.google.com/spreadsheets/d/1PygGy0YAV7VczmRfDhaV10GYZWQmBMmoHg0XhKfHdAo"
+print("Google Sheet URL:", google_sheet_url)
+spreadsheet = client.open_by_url(google_sheet_url)
+
+# Debugging: Print the sheet names to ensure we are accessing the correct sheet
 sheet = spreadsheet.worksheet("AttendanceData")
 response_sheet = spreadsheet.worksheet("FormResponses")
+print("Accessing worksheet title:", sheet.title)
 
 # Chapter data CSV file path (same as in Oman app)
 CHAPTER_DATA_FILE = 'Chapter Data - Sheet1.csv'
