@@ -12,10 +12,23 @@ __pycache__/
 
 # Ignore environment variables file
 .myenv.env
-
 .env
 
+# Ignore secret files
 encoded_key.txt
 
+# Ignore all JSON files except the one we need
 *.json
 !groomville.json
+
+# Ignore Git junk and temp build files
+*.pack
+*.idx
+*.log
+
+# But ALLOW these for Heroku
+!requirements.txt
+!runtime.txt
+
+# Embedded git repo cleanup
+Attendance_Saudi.git/
