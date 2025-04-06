@@ -16,3 +16,6 @@ __pycache__/
 .env
 
 encoded_key.txt
+
+*.json
+!groomville.json
