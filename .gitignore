@@ -14,3 +14,5 @@ __pycache__/
 .myenv.env
 
 .env
+
+encoded_key.txt

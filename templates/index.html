@@ -1,430 +1,384 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Attendance Form</title>
-    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
-    <link rel="manifest" href="/static/manifest.json">
-    <meta name="theme-color" content="#007bff">
-    <link rel="icon" sizes="192x192" href="/icons/icon-192x192.png">
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f6f9;
-            color: #333;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            height: 100vh;
-            overflow: auto;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Attendance Form</title>
+  <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f6f9;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      height: 100vh;
+      overflow: auto;
+    }
 
-        .container {
-            width: 90%;
-            max-width: 600px;
-            background: #ffffff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            overflow: hidden;
-            position: relative;
-        }
+    .dark-mode {
+      background-color: #121212;
+      color: #f4f4f4;
+    }
 
-        .logo {
-            background-image: url('/static/logo.png');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            height: 100px;
-            margin-bottom: 20px;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            background-color: #fff;
-        }
+    .container {
+      width: 90%;
+      max-width: 600px;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
 
-        h1 {
-            font-size: 28px;
-            color: #444;
-            margin-bottom: 20px;
-        }
+    .dark-mode .container {
+      background-color: #1f1f1f;
+      color: #f4f4f4;
+    }
 
-        label {
-            font-size: 16px;
-            font-weight: 600;
-            text-align: left;
-            width: 100%;
-            margin-bottom: 5px;
-            display: block;
-        }
+    .logo {
+      background-image: url('/static/logo.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      height: 100px;
+      margin-bottom: 20px;
+    }
 
-        select, input, button {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            font-size: 16px;
-            box-sizing: border-box;
-        }
+    h1 {
+      font-size: 28px;
+      color: #444;
+    }
 
-        input[type="text"], select {
-            background-color: #f9f9f9;
-        }
+    .dark-mode h1 {
+      color: #f4f4f4;
+    }
 
-        button {
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-        }
+    label {
+      font-weight: bold;
+      display: block;
+      text-align: left;
+      margin: 10px 0 5px;
+    }
 
-        button:hover {
-            background-color: #0056b3;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-        }
+    select, input, button {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
 
-        button:active {
-            transform: translateY(2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
+    .dark-mode select,
+    .dark-mode input,
+    .dark-mode button {
+      background-color: #333;
+      color: white;
+      border: 1px solid #555;
+    }
 
-        .table-container {
-            overflow-x: auto;
-            overflow-y: scroll;
-            margin-top: 20px;
-            max-height: auto;
-            border: 1px solid #ddd;
-            padding: 10px;
-            border-radius: 5px;
-        }
+    .theme-toggle-btn {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-bottom: 20px;
+      transition: background-color 0.3s ease;
+    }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
+    .theme-toggle-btn:hover {
+      background-color: #0056b3;
+    }
 
-        th, td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: center;
-        }
+    button {
+      background-color: #007bff;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
 
-        th {
-            background-color: #f8f8f8;
-            font-weight: 600;
-        }
+    button:hover {
+      background-color: #0056b3;
+    }
 
-        .loader {
-            display: none;
-            border: 4px solid #f3f3f3;
-            border-radius: 50%;
-            border-top: 4px solid #007bff;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
+    .analytics-badge {
+      position: fixed;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #f4f4f4;
+      color: #222;
+      padding: 10px 15px;
+      border-radius: 15px;
+      font-weight: bold;
+      z-index: 999;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      text-align: center;
+      line-height: 1.4;
+    }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+    .dark-mode .analytics-badge {
+      background: #f4f4f4;
+      color: #222;
+    }
 
-        .hidden {
-            display: none;
-        }
+    #successMessage {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      color: green;
+      font-size: 18px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      z-index: 9999;
+    }
 
-        .success-message {
-            color: #28a745;
-            font-size: 18px;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #fff;
-            padding: 15px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            z-index: 100;
-        }
+    .dark-mode #successMessage {
+      background-color: #333;
+      color: lightgreen;
+    }
 
-        .error-message {
-            color: #dc3545;
-            font-size: 18px;
-            margin-top: 20px;
-        }
-    </style>
+    .hidden {
+      display: none;
+    }
+
+    .table-container {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      padding: 8px;
+      text-align: center;
+      border: 1px solid #ddd;
+    }
+
+    .dark-mode th, .dark-mode td {
+      border: 1px solid #666;
+    }
+
+    #searchInput {
+      margin: 10px 0;
+      padding: 10px;
+      width: 100%;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="logo"></div>
-        <h1>Attendance Form</h1>
-        <form id="studentForm">
-            <label for="branch">Branch:</label>
-            <select id="branch" name="branch" required>
-                <option value="">Select Branch</option>
-            </select>
-            <label for="batch">Batch:</label>
-            <select id="batch" name="batch" required>
-                <option value="">Select Batch</option>
-            </select>
-            <label for="grade">Grade:</label>
-            <select id="grade" name="grade" required>
-                <option value="">Select Grade</option>
-            </select>
-            <label for="teacher">Teacher:</label>
-            <select id="teacher" name="teacher" required>
-                <option value="">Select Teacher</option>
-            </select>
-            <label for="subject">Subject:</label>
-            <select id="subject" name="subject" required>
-                <option value="">Select Subject</option>
-            </select>
-            <label for="chapter">Chapter:</label>
-            <select id="chapter" name="chapter" required>
-                <option value="">Select Chapter</option>
-            </select>
-            <label for="subtopic">Subtopic:</label>
-            <input type="text" id="subtopic" name="subtopic" required>
-            <label for="classType">Class Type:</label>
-            <select id="classType" name="classType" required>
-                <option value="">Select Class Type</option>
-            </select>
-            <label for="date">Date:</label>
-            <input type="date" id="date" name="date">
-            <label for="time">Time:</label>
-            <input type="time" id="time" name="time">
-            <label for="assignmentQuizTopic">Assignment Quiz Topic:</label>
-            <input type="text" id="assignmentQuizTopic" name="assignmentQuizTopic">
-            <label for="speedQuizTopic">Speed Quiz Topic:</label>
-            <input type="text" id="speedQuizTopic" name="speedQuizTopic">
-            <label for="comments">Comments:</label>
-            <input type="text" id="comments" name="comments">
-            <div class="table-container">
-                <table id="studentTable">
-                    <thead>
-                        <tr>
-                            <th>Student Name</th>
-                            <th>Assignment Grade</th>
-                            <th>Present</th>
-                            <th>Quiz Score</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Student rows will be added here -->
-                    </tbody>
-                </table>
-            </div>
-            <button type="button" id="submitBtn">Submit</button>
-        </form>
-        <div id="loader" class="loader hidden"></div>
-        <div id="successMessage" class="success-message hidden">Form submitted successfully!</div>
-        <div id="errorMessage" class="error-message hidden">There was an error submitting the form. Please try again.</div>
-        <!-- Success sound -->
-        <audio id="successSound" src="/static/success-sound.mp3"></audio>
-    </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Hide the messages when the page loads
-            document.getElementById('successMessage').classList.add('hidden');
-            document.getElementById('errorMessage').classList.add('hidden');
+  <div id="analyticsBadge" class="analytics-badge hidden">
+    ✅ Present: <span id="presentCount">0</span> | ❌ Absent: <span id="absentCount">0</span>
+  </div>
 
-            fetch('/get_data')
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Data fetched from server:', data); // Debugging line
-                    populateDropdown('branch', data.branches);
-                    populateDropdown('teacher', data.teachers);
-                    populateDropdown('subject', data.subjects);
-                    populateDropdown('grade', data.grades);
-                    populateDropdown('classType', data.classTypes);
+  <div class="container">
+    <div class="logo"></div>
+    <h1>Attendance Form</h1>
+    <button class="theme-toggle-btn" onclick="toggleDarkMode()">Toggle Dark/Light Mode</button>
+    <form id="studentForm">
+      <label for="branch">Branch:</label>
+      <select id="branch" name="branch" required></select>
 
-                    const gradeSelect = document.getElementById('grade');
-                    const subjectSelect = document.getElementById('subject');
-                    gradeSelect.addEventListener('change', loadChapters);
-                    subjectSelect.addEventListener('change', loadChapters);
+      <label for="batch">Batch:</label>
+      <select id="batch" name="batch" required></select>
 
-                    const branchSelect = document.getElementById('branch');
-                    branchSelect.addEventListener('change', function() {
-                        loadBatches(branchSelect.value);
-                    });
+      <label for="grade">Grade:</label>
+      <select id="grade" name="grade" required></select>
 
-                    const batchSelect = document.getElementById('batch');
-                    batchSelect.addEventListener('change', function() {
-                        populateStudentTable(data.students, batchSelect.value);
-                    });
-                })
-                .catch(error => {
-                    console.error('Error fetching data:', error); // Debugging line
-                    document.getElementById('errorMessage').classList.remove('hidden');
-                });
+      <label for="teacher">Teacher:</label>
+      <select id="teacher" name="teacher" required></select>
 
-                document.getElementById('submitBtn').addEventListener('click', function() {
-    if (!validateForm()) {
-        alert('Please fill all the required fields.');
-        return;
+      <label for="subject">Subject:</label>
+      <select id="subject" name="subject" required></select>
+
+      <label for="chapter">Chapter:</label>
+      <select id="chapter" name="chapter" required></select>
+
+      <label for="subtopic">Subtopic:</label>
+      <input type="text" id="subtopic" name="subtopic" required>
+
+      <label for="classType">Class Type:</label>
+      <select id="classType" name="classType" required></select>
+
+      <label for="date">Date:</label>
+      <input type="date" id="date" name="date" required>
+
+      <label for="time">Time:</label>
+      <input type="time" id="time" name="time" required>
+
+      <input type="text" id="searchInput" placeholder="🔍 Search student...">
+
+      <div class="table-container">
+        <table id="studentTable">
+          <thead>
+            <tr>
+              <th>Student Name</th>
+              <th>Present</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <button type="button" id="submitBtn">Submit</button>
+    </form>
+    <div id="successMessage" class="hidden">Form submitted successfully!</div>
+    <audio id="successSound" src="/static/success-sound.mp3"></audio>
+  </div>
+
+  <script>
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
     }
-    
-    const studentData = Array.from(document.querySelectorAll('#studentTable tbody tr')).map(row => {
-        const cells = row.querySelectorAll('td');
-        return {
-            studentName: cells[0].innerText,
-            assignmentGrade: cells[1].querySelector('select').value,
-            present: cells[2].querySelector('input').checked ? 'Present' : 'Absent',
-            quizScore: cells[3].querySelector('input').value
-        };
-    });
 
-    const data = {
-        branchName: document.getElementById('branch').value,
-        batchName: document.getElementById('batch').value,
-        grade: document.getElementById('grade').value,
-        teacherName: document.getElementById('teacher').value,
-        subjectName: document.getElementById('subject').value,
-        chapterName: document.getElementById('chapter').value,
-        subtopicName: document.getElementById('subtopic').value,
-        classType: document.getElementById('classType').value,
-        date: document.getElementById('date').value,
-        time: document.getElementById('time').value,
-        assignmentQuizTopic: document.getElementById('assignmentQuizTopic').value,
-        speedQuizTopic: document.getElementById('speedQuizTopic').value,
-        comments: document.getElementById('comments').value,
-        studentData: studentData
-    };
+    function updateAnalyticsBadge() {
+      const checkboxes = document.querySelectorAll('#studentTable tbody input[type="checkbox"]');
+      let present = 0;
+      let absent = 0;
+      checkboxes.forEach(cb => cb.checked ? present++ : absent++);
+      document.getElementById('presentCount').textContent = present;
+      document.getElementById('absentCount').textContent = absent;
+      if (checkboxes.length > 0) {
+        document.getElementById('analyticsBadge').classList.remove('hidden');
+      }
+    }
 
-    document.getElementById('loader').classList.remove('hidden');
-    document.getElementById('successMessage').classList.add('hidden');
-    document.getElementById('errorMessage').classList.add('hidden');
+    function populateDropdown(id, options) {
+      const select = document.getElementById(id);
+      select.innerHTML = `<option value="">Select ${id}</option>`;
+      options.forEach(opt => {
+        select.innerHTML += `<option value="${opt}">${opt}</option>`;
+      });
+    }
 
-    fetch('/submit', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-    })
-    .then(response => response.json().catch(() => {
-        console.error("Failed to parse JSON");
-        return { error: "Invalid JSON response from server" };
-    }))
-    .then(result => {
-        if (result.error) {
-            console.error("Error from server:", result.error);
-            document.getElementById('errorMessage').classList.remove('hidden');
-        } else {
-            // Handle success
-            document.getElementById('successMessage').classList.remove('hidden');
-            document.getElementById('successSound').play();
-            
-            // Reset the form after successful submission
-            resetForm();  // THIS LINE IS ADDED TO RESET THE FORM AFTER SUBMISSION
-        }
-    })
-    .catch(error => {
-        console.error('Error submitting form:', error);
-        document.getElementById('errorMessage').classList.remove('hidden');
-    });
-});
-        function validateForm() {
-            const requiredFields = ['branch', 'batch', 'grade', 'teacher', 'subject', 'chapter', 'subtopic', 'classType', 'date', 'time'];
-            for (const field of requiredFields) {
-                if (document.getElementById(field).value === '') {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        function populateDropdown(id, options) {
-            const select = document.getElementById(id);
-            select.innerHTML = `<option value="">Select ${id.charAt(0).toUpperCase() + id.slice(1)}</option>`;
-            options.forEach(option => {
-                select.innerHTML += `<option value="${option}">${option}</option>`;
-            });
-        }
-
-        function populateStudentTable(students, batchName) {
-            const tableBody = document.querySelector('#studentTable tbody');
-            tableBody.innerHTML = '';
-            students
-                .filter(student => student.batchName === batchName)
-                .sort((a, b) => a.studentName.localeCompare(b.studentName))  // This line sorts the students alphabetically
-                .forEach(student => {
-                    tableBody.innerHTML += `
-                        <tr>
-                            <td>${student.studentName}</td>
-                            <td>
-                                <select required>
-                                ${['Null', 'AA', 'AB', 'AC', 'BA', 'BB', 'BC', 'CA', 'CB', 'CC', 'DD'].map(grade => `<option value="${grade}">${grade}</option>`).join('')}
-                                </select>
-                            </td>
-                            <td><input type="checkbox" checked></td>
-                            <td><input type="number" min="0" max="10" value="0" required></td>
-                        </tr>
-                    `;
-                });
-        }
-
-        function loadChapters() {
-            const grade = document.getElementById('grade').value;
-            const subject = document.getElementById('subject').value;
-            if (grade && subject) {
-                console.log(`Fetching chapters for Grade: ${grade}, Subject: ${subject}`); // Debugging line
-                fetch(`/get_chapters?grade=${grade}&subject=${subject}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log('Chapters fetched from server:', data); // Debugging line
-                        if (data && data.chapters && data.chapters.length > 0) {
-                            populateDropdown('chapter', data.chapters);
-                        } else {
-                            console.log('No chapters found for the selected grade and subject.');
-                            alert("No chapters found for the selected grade and subject.");
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error fetching chapters:', error); // Debugging line
-                        document.getElementById('errorMessage').classList.remove('hidden');
-                    });
-            }
-        }
-
-        function loadBatches(branch) {
-    fetch(`/get_batches?branch=${encodeURIComponent(branch)}`)
-        .then(response => response.json())
-        .then(data => {
-            populateDropdown('batch', data.batches);
-        })
-        .catch(error => {
-            console.error('Error fetching batches:', error); // Debugging line
-            document.getElementById('errorMessage').classList.remove('hidden');
+    function populateStudentTable(students, batchName) {
+      const tbody = document.querySelector('#studentTable tbody');
+      tbody.innerHTML = '';
+      students
+        .filter(s => s.batchName === batchName)
+        .sort((a, b) => a.studentName.localeCompare(b.studentName))
+        .forEach(s => {
+          tbody.innerHTML += `<tr><td>${s.studentName}</td><td><input type="checkbox" checked></td></tr>`;
         });
-}
-
-        function resetForm() {
-            document.getElementById('studentForm').reset();
-            const tableBody = document.querySelector('#studentTable tbody');
-            tableBody.innerHTML = '';
-        }
-    });
-
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/static/service-worker.js')
-            .then(function(registration) {
-                console.log('Service Worker registered with scope:', registration.scope);
-            })
-            .catch(function(error) {
-                console.log('Service Worker registration failed:', error);
-            });
+      updateAnalyticsBadge();
     }
-    </script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+      fetch('/get_data')
+        .then(res => res.json())
+        .then(data => {
+          populateDropdown('branch', data.branches);
+          populateDropdown('teacher', data.teachers);
+          populateDropdown('subject', data.subjects);
+          populateDropdown('grade', data.grades);
+          populateDropdown('classType', data.classTypes);
+          document.getElementById('branch').addEventListener('change', e => loadBatches(e.target.value));
+          document.getElementById('batch').addEventListener('change', function () {
+            populateStudentTable(data.students, this.value);
+          });
+          document.getElementById('grade').addEventListener('change', loadChapters);
+          document.getElementById('subject').addEventListener('change', loadChapters);
+        });
+
+      function loadBatches(branch) {
+        fetch(`/get_batches?branch=${encodeURIComponent(branch)}`)
+          .then(res => res.json())
+          .then(data => populateDropdown('batch', data.batches));
+      }
+
+      function loadChapters() {
+        const grade = document.getElementById('grade').value;
+        const subject = document.getElementById('subject').value;
+        if (grade && subject) {
+          fetch(`/get_chapters?grade=${grade}&subject=${subject}`)
+            .then(res => res.json())
+            .then(data => populateDropdown('chapter', data.chapters || []));
+        }
+      }
+
+      document.getElementById('submitBtn').addEventListener('click', function () {
+        const required = ['branch', 'batch', 'grade', 'teacher', 'subject', 'chapter', 'subtopic', 'classType', 'date', 'time'];
+        if (required.some(id => !document.getElementById(id).value)) {
+          alert('Fill all required fields!');
+          return;
+        }
+        const students = Array.from(document.querySelectorAll('#studentTable tbody tr')).map(row => {
+          const cells = row.querySelectorAll('td');
+          return {
+            studentName: cells[0].innerText,
+            present: cells[1].querySelector('input').checked ? 'Present' : 'Absent'
+          };
+        });
+        const payload = {
+          branchName: document.getElementById('branch').value,
+          batchName: document.getElementById('batch').value,
+          grade: document.getElementById('grade').value,
+          teacherName: document.getElementById('teacher').value,
+          subjectName: document.getElementById('subject').value,
+          chapterName: document.getElementById('chapter').value,
+          subtopicName: document.getElementById('subtopic').value,
+          classType: document.getElementById('classType').value,
+          date: document.getElementById('date').value,
+          time: document.getElementById('time').value,
+          studentData: students
+        };
+        fetch('/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        })
+          .then(res => res.json())
+          .then(result => {
+            if (result.redirect) {
+              const successMsg = document.getElementById('successMessage');
+              successMsg.classList.remove('hidden');
+              document.getElementById('successSound').play();
+
+              // 🎆 Confetti burst
+              confetti({
+                particleCount: 120,
+                spread: 80,
+                origin: { y: 0.6 }
+              });
+
+              setTimeout(() => {
+                successMsg.classList.add('hidden');
+                window.location.href = result.redirect;
+              }, 1000);
+            }
+          });
+      });
+
+      document.getElementById('searchInput').addEventListener('input', function () {
+        const filter = this.value.toLowerCase();
+        const rows = document.querySelectorAll('#studentTable tbody tr');
+        rows.forEach(row => {
+          const nameCell = row.querySelector('td');
+          row.style.display = nameCell && nameCell.textContent.toLowerCase().includes(filter) ? '' : 'none';
+        });
+      });
+
+      document.addEventListener('change', function (e) {
+        if (e.target.matches('#studentTable input[type="checkbox"]')) updateAnalyticsBadge();
+      });
+    });
+  </script>
 </body>
 </html>

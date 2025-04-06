@@ -8,44 +8,31 @@ import json
 import base64
 from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
-import csv  # Import CSV module to read local CSV file (added from Oman)
 
 # Base64 encoded Google credentials
 base64_string = os.getenv('GOOGLE_APPLICATION_CREDENTIALS_BASE64')
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # Needed for session management
-CORS(app, resources={r"/*": {"origins": "*"}})  # Enable CORS for all routes
+app.secret_key = 'your_secret_key'
+CORS(app, resources={r"/*": {"origins": "*"}})
 
-# Hardcoded credentials for simplicity
 USERNAME = 'admin'
 PASSWORD = 'password123'
 
-# Configure Google Sheets API credentials
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
 
-# Load and decode the base64 encoded credentials
-credentials_json = base64_string
-
-if not credentials_json:
+if not base64_string:
     raise ValueError("The environment variable 'GOOGLE_APPLICATION_CREDENTIALS_BASE64' is not set")
 
-creds_dict = json.loads(base64.b64decode(credentials_json).decode('utf-8'))
+creds_dict = json.loads(base64.b64decode(base64_string).decode('utf-8'))
 creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
 client = gspread.authorize(creds)
 
-# Open the spreadsheet by URL
 google_sheet_url = "https://docs.google.com/spreadsheets/d/1PygGy0YAV7VczmRfDhaV10GYZWQmBMmoHg0XhKfHdAo"
-print("Google Sheet URL:", google_sheet_url)
 spreadsheet = client.open_by_url(google_sheet_url)
-
-# Debugging: Print the sheet names to ensure we are accessing the correct sheet
 sheet = spreadsheet.worksheet("AttendanceData")
 response_sheet = spreadsheet.worksheet("FormResponses")
-print("Accessing worksheet title:", sheet.title)
-
-# Chapter data CSV file path (same as in Oman app)
-CHAPTER_DATA_FILE = 'Chapter Data - Sheet1.csv'
+chapters_sheet = spreadsheet.worksheet("Chapters")
 
 @app.route('/')
 def home():
@@ -56,22 +43,19 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        
+
         if username == USERNAME and password == PASSWORD:
             session['logged_in'] = True
-            print("Login successful")
             return redirect(url_for('attendance_form'))
         else:
             error = 'Invalid credentials. Please try again.'
-            print("Login failed")
             return render_template('login.html', error=error)
-    print("Displaying login page")
     return render_template('login.html')
 
 @app.route('/attendance_form')
 def attendance_form():
     if 'logged_in' in session and session['logged_in']:
-        return render_template('index.html')  # Assuming this is your attendance form
+        return render_template('index.html')
     else:
         return redirect(url_for('login'))
 
@@ -88,25 +72,17 @@ def serve_static(filename):
 def get_data():
     try:
         branches = sorted(list(set(sheet.col_values(10)[1:])))
-        print("Branches:", branches)  # Log branches
         teachers = sorted(list(set(sheet.col_values(9)[1:])))
-        print("Teachers:", teachers)  # Log teachers
         subjects = sorted(list(set(sheet.col_values(7)[1:])))
-        print("Subjects:", subjects)  # Log subjects
         grades = sorted(list(set(sheet.col_values(6)[1:])))
-        print("Grades:", grades)  # Log grades
         class_types = sorted(list(set(sheet.col_values(3)[1:])))
-        print("Class Types:", class_types)  # Log class types
         batches = sorted(list(set([rec['Batch'] for rec in sheet.get_all_records()])))
-        print("Batches:", batches)  # Log batches
 
         student_records = sheet.get_all_records()
         students = [{'branchName': rec['Branch'], 'batchName': rec['Batch'], 'studentName': rec['Student']} for rec in student_records]
-        print("Students:", students)  # Log students
+
         chapter_names = [{'subjectName': rec['Subject'], 'chapterName': rec['Chapter Name']} for rec in student_records]
-        print("Chapter Names:", chapter_names)  # Log chapter names
         assignment_grades = list(set([rec['Assignment Grade'] for rec in student_records]))
-        print("Assignment Grades:", assignment_grades)  # Log assignment grades
 
         return jsonify({
             'branches': branches,
@@ -127,23 +103,13 @@ def get_data():
 def get_chapters():
     grade = request.args.get('grade')
     subject = request.args.get('subject')
-
     try:
-        chapters = []
-
-        # Read the CSV file
-        with open(CHAPTER_DATA_FILE, mode='r') as file:
-            csv_reader = csv.reader(file)
-            for row in csv_reader:
-                row_grade = row[0].strip().lower()
-                row_subject = row[1].strip().lower()
-
-                if row_grade == grade.strip().lower() and row_subject == subject.strip().lower():
-                    chapters.append(row[2])
-
-        # Debugging: Print the filtered chapters
-        print(f"Filtered Chapters: {chapters}")
-
+        all_data = chapters_sheet.get_all_records()
+        chapters = [
+            row['Chapter'] for row in all_data
+            if str(row.get('Grade', '')).strip().lower() == str(grade).strip().lower() and
+               str(row.get('Subject', '')).strip().lower() == str(subject).strip().lower()
+        ]
         return jsonify({'chapters': chapters})
     except Exception as e:
         print(f'Error in get_chapters: {e}')
@@ -154,7 +120,6 @@ def get_batches():
     branch = request.args.get('branch')
     try:
         batches = sorted(list(set([rec['Batch'] for rec in sheet.get_all_records() if rec['Branch'] == branch])))
-        print(f"Batches for branch {branch}: {batches}")
         return jsonify({'batches': batches})
     except Exception as e:
         print(f"Error in get_batches: {e}")
@@ -164,9 +129,8 @@ def get_batches():
 def submit():
     try:
         data = request.json
-        # Get the date and time from the form submission
-        date = data.get('date', datetime.now().strftime("%d-%b-%y"))  # Format date as DD-MMM-YY
-        time = data.get('time', datetime.now().strftime("%H:%M:%S"))  # Ensure time is also retrieved from the form
+        date = data.get('date', datetime.now().strftime("%d-%b-%y"))
+        time = data.get('time', datetime.now().strftime("%H:%M:%S"))
 
         branch_name = data['branchName']
         batch_name = data['batchName']
@@ -178,27 +142,46 @@ def submit():
         student_data = data['studentData']
         class_type = data['classType']
 
+        print("Student Data:", student_data)
+
         rows_to_add = []
         for student in student_data:
-            rows_to_add.append([
-                student['studentName'], student['assignmentGrade'], class_type, student['present'],
-                student['quizScore'], subject_name, chapter_name,
-                grade, teacher_name, branch_name, batch_name, date, time, subtopic_name
-            ])
+            row = [
+                student['studentName'],          # Column A: Student
+                class_type,                      # Column B: Class Type
+                student['present'],              # Column C: Present/Absent
+                subject_name,                    # Column D: Subject
+                chapter_name,                    # Column E: Chapter Name
+                grade,                           # Column F: Grade
+                teacher_name,                    # Column G: Teacher
+                branch_name,                     # Column H: Branch
+                batch_name,                      # Column I: Batch
+                date,                            # Column J: Date
+                time,                            # Column K: Time
+                subtopic_name                    # Column L: Sub-Topic
+            ]
+            rows_to_add.append(row)
+
+        print("Submitting rows:", rows_to_add)
 
         response_sheet.append_rows(rows_to_add)
 
-        quiz_scores = [int(student['quizScore']) for student in student_data if student['present'] == 'Present']
-        topper = max(student_data, key=lambda x: int(x['quizScore']) if x['present'] == 'Present' else 0)
-        present_count = sum(1 for student in student_data if student['present'] == 'Present')
+        # Store recent submissions in session
+        session['recent_submissions'] = rows_to_add
 
-        return jsonify({
-            'topperName': topper['studentName'],
-            'presentCount': present_count
-        })
+        return jsonify({'message': 'Form submitted successfully', 'redirect': url_for('view_submissions')})
     except Exception as e:
         print(f"Error in /submit: {str(e)}")
         return jsonify({'error': 'Internal Server Error'}), 500
+
+@app.route('/view_submissions')
+def view_submissions():
+    try:
+        data = session.pop('recent_submissions', [])
+        return render_template('submissions.html', submissions=data)
+    except Exception as e:
+        print(f"Error in /view_submissions: {e}")
+        return "Error loading submissions."
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000, debug=True)
